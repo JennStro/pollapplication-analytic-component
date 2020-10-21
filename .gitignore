@@ -35,5 +35,3 @@ mvnw.cmd
 ### VS Code ###
 .vscode/
 .mvn/
-pom.xml
-src/
