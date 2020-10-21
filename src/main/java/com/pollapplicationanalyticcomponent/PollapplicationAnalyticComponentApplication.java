@@ -1,5 +1,9 @@
 package com.pollapplicationanalyticcomponent;
 
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +13,27 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 @SpringBootApplication
 public class PollapplicationAnalyticComponentApplication {
+
+	static final String topicExchangeName = "pollapp-exchange";
+
+	static final String queueName = "polls";
+
+	static final String routingKey = "poll";
+
+	@Bean
+	Queue queue() {
+		return new Queue(queueName, false);
+	}
+
+	@Bean
+	TopicExchange exchange() {
+		return new TopicExchange(topicExchangeName);
+	}
+
+	@Bean
+	Binding binding(Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
+	}
 
 	@Bean
 	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
