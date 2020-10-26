@@ -14,33 +14,14 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 @SpringBootApplication
 public class PollapplicationAnalyticComponentApplication {
 
-	static final String topicExchangeName = "pollapp-exchange";
-
 	static final String queueName = "polls";
-
-	static final String routingKey = "poll";
-
-	@Bean
-	Queue queue() {
-		return new Queue(queueName, false);
-	}
-
-	@Bean
-	TopicExchange exchange() {
-		return new TopicExchange(topicExchangeName);
-	}
-
-	@Bean
-	Binding binding(Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
-	}
 
 	@Bean
 	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
 											 MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames("poll-app-queue");
+		container.setQueueNames("polls");
 		container.setMessageListener(listenerAdapter);
 		return container;
 	}
