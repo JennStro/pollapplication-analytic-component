@@ -17,19 +17,23 @@ public class Receiver {
   @RabbitListener(queues = PollapplicationAnalyticComponentApplication.queueName)
   public void receiveMessage(String message) {
     System.out.println("Received " + message);
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      JsonNode pollObject = mapper.readTree(message);
-      JsonNode votesObject = mapper.readTree(String.valueOf(pollObject.get("votes")));
-      pollRepository.save(
-          new Poll()
-              .setId(pollObject.get("id").longValue())
-              .setQuestion(pollObject.get("question").textValue())
-              .setYes(votesObject.get("yes").intValue())
-              .setNo(votesObject.get("no").intValue())
-              .setReceived(Instant.now()));
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
+    if (message.equals("started queue")) {
+      System.out.println("Server has started queue.");
+    } else {
+      ObjectMapper mapper = new ObjectMapper();
+      try {
+        JsonNode pollObject = mapper.readTree(message);
+        JsonNode votesObject = mapper.readTree(String.valueOf(pollObject.get("votes")));
+        pollRepository.save(
+                new Poll()
+                        .setId(pollObject.get("id").longValue())
+                        .setQuestion(pollObject.get("question").textValue())
+                        .setYes(votesObject.get("yes").intValue())
+                        .setNo(votesObject.get("no").intValue())
+                        .setReceived(Instant.now()));
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
     }
   }
 }
